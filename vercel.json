@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm install",
+  "outputDirectory": ".",
+  "functions": {
+    "api/process-video.js": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  }
+}

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeShift Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #FFFFFF;
+            color: #1a1a1a;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #008FC4;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            max-width: 400px;
+            margin: 60px auto;
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #008FC4;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #008FC4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0077a3;
+        }
+
+        button.secondary {
+            background: #1a1a1a;
+            margin-top: 10px;
+        }
+
+        button.secondary:hover {
+            background: #333;
+        }
+
+        button.danger {
+            background: #dc3545;
+        }
+
+        button.danger:hover {
+            background: #c82333;
+        }
+
+        button.success {
+            background: #00C48F;
+        }
+
+        button.success:hover {
+            background: #00a876;
+        }
+
+        /* Main App Screen */
+        .app-screen {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .panel h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .upload-prompt {
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 40px 20px;
+            border: 2px dashed #008FC4;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .upload-prompt:hover {
+            background: #f0f8ff;
+        }
+
+        .upload-prompt p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .upload-prompt input[type="file"] {
+            display: none;
+        }
+
+        .upload-success {
+            background: #f0fdf4;
+            border: 1px solid #00C48F;
+            padding: 16px;
+            border-radius: 4px;
+        }
+
+        .upload-success p {
+            font-size: 13px;
+            color: #1a1a1a;
+            margin: 4px 0;
+        }
+
+        .upload-success .label {
+            font-weight: 600;
+            color: #008FC4;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #008FC4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            padding: 12px;
+            border-radius: 4px;
+            color: #dc3545;
+            font-size: 13px;
+            margin: 12px 0;
+        }
+
+        .info {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            padding: 12px;
+            border-radius: 4px;
+            color: #008FC4;
+            font-size: 13px;
+            margin: 12px 0;
+        }
+
+        /* Controls */
+        .control-group {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .spinner-input {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .spinner-input input {
+            flex: 1;
+        }
+
+        .spinner-input button {
+            width: 36px;
+            padding: 8px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Motion Artifact Dial */
+        .dial-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #axisDial {
+            border: 2px solid #008FC4;
+            border-radius: 50%;
+            cursor: crosshair;
+            background: white;
+        }
+
+        .dial-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dial-input-group input {
+            width: 80px;
+        }
+
+        /* Feature Reminders */
+        .reminder-cards {
+            margin-top: 40px;
+        }
+
+        .reminder-card {
+            background: #f0fdf4;
+            border: 1px solid #00C48F;
+            padding: 14px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+            color: #1a1a1a;
+        }
+
+        .reminder-text {
+            flex: 1;
+        }
+
+        .reminder-close {
+            background: none;
+            border: none;
+            color: #00C48F;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: auto;
+            font-weight: 700;
+        }
+
+        /* Logout */
+        .user-info {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-screen {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Export Processing */
+        .export-status {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f0f8ff;
+            border: 1px solid #008FC4;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            color: #008FC4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VibeShift Studio</h1>
+            <p class="subtitle">Healthitainment Video Processing</p>
+        </header>
+
+        <!-- Login Screen -->
+        <div class="screen active" id="loginScreen">
+            <div class="login-screen">
+                <h2 style="text-align: center; margin-bottom: 30px; font-size: 18px;">Login</h2>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                </div>
+                <button onclick="app.handleLogin()">Login</button>
+                <button class="secondary" onclick="app.showCreateAccountForm()">Create Account</button>
+                <div class="info" style="margin-top: 20px;">
+                    <strong>Demo account:</strong><br>
+                    jeff@vibetechglobal.com / demo
+                </div>
+            </div>
+        </div>
+
+        <!-- App Screen -->
+        <div class="screen" id="appScreen">
+            <div class="app-screen">
+                <!-- Left Panel: Video Upload -->
+                <div class="panel">
+                    <h2>Video Upload</h2>
+                    <div class="upload-prompt" id="uploadPrompt" onclick="document.getElementById('videoInput').click()">
+                        <p>📁 Click to select video</p>
+                        <p style="font-size: 12px;">MP4 / MOV / AVI</p>
+                        <input type="file" id="videoInput" accept="video/*" onchange="app.handleVideoUpload(event)">
+                    </div>
+                    <div id="uploadSuccess" style="display: none;"></div>
+                    <div id="uploadError" style="display: none;"></div>
+                    <div id="uploadLoading" style="display: none;" class="loading">
+                        <div class="spinner"></div>
+                        <p>Uploading video...</p>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Controls -->
+                <div class="panel">
+                    <h2>Video Controls</h2>
+
+                    <!-- Trim -->
+                    <div class="control-group" id="trimControls" style="display: none;">
+                        <div class="control-label">Trim Start (seconds)</div>
+                        <div class="spinner-input">
+                            <button onclick="app.adjustTrimStart(-1)">−</button>
+                            <input type="number" id="trimStart" value="0" min="0" onchange="app.updateTrimStart(this.value)">
+                            <button onclick="app.adjustTrimStart(1)">+</button>
+                        </div>
+
+                        <div class="control-label" style="margin-top: 16px;">Trim End (seconds)</div>
+                        <div class="spinner-input">
+                            <button onclick="app.adjustTrimEnd(-1)">−</button>
+                            <input type="number" id="trimEnd" value="0" min="0" onchange="app.updateTrimEnd(this.value)">
+                            <button onclick="app.adjustTrimEnd(1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Rotation -->
+                    <div class="control-group" id="rotationControls" style="display: none;">
+                        <div class="control-label">Rotation (degrees)</div>
+                        <div class="spinner-input">
+                            <button onclick="app.adjustRotation(-5)">−</button>
+                            <input type="number" id="rotationAngle" value="0" min="0" max="360" onchange="app.updateRotation(this.value)">
+                            <button onclick="app.adjustRotation(5)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Motion Artifact Dial -->
+                    <div class="control-group" id="motionControls" style="display: none;">
+                        <div class="control-label">Motion Artifact Settings</div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <div class="control-label">Rotation Axis (degrees)</div>
+                            <div class="dial-container">
+                                <canvas id="axisDial" width="200" height="200"></canvas>
+                                <div class="dial-input-group">
+                                    <button onclick="app.adjustAxisDegrees(-10)">−</button>
+                                    <input type="number" id="axisDegrees" value="0" min="0" max="360" onchange="app.updateAxisDegrees(this.value)">
+                                    <button onclick="app.adjustAxisDegrees(10)">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-label">Motion Range Min (degrees)</div>
+                        <div class="spinner-input">
+                            <button onclick="app.adjustMotionMin(-1)">−</button>
+                            <input type="number" id="motionRangeMin" value="0" min="0" onchange="app.updateMotionMin(this.value)">
+                            <button onclick="app.adjustMotionMin(1)">+</button>
+                        </div>
+
+                        <div class="control-label" style="margin-top: 16px;">Motion Range Max (degrees)</div>
+                        <div class="spinner-input">
+                            <button onclick="app.adjustMotionMax(-1)">−</button>
+                            <input type="number" id="motionRangeMax" value="5" min="0" onchange="app.updateMotionMax(this.value)">
+                            <button onclick="app.adjustMotionMax(1)">+</button>
+                        </div>
+
+                        <div class="control-label" style="margin-top: 16px;">Cycle Duration (seconds)</div>
+                        <div class="spinner-input">
+                            <button onclick="app.adjustCycleDuration(-0.5)">−</button>
+                            <input type="number" id="cycleDuration" value="1" min="0.5" step="0.5" onchange="app.updateCycleDuration(this.value)">
+                            <button onclick="app.adjustCycleDuration(0.5)">+</button>
+                        </div>
+
+                        <div style="margin-top: 12px; padding: 12px; background: white; border-radius: 4px; font-size: 12px;">
+                            <strong>Preview:</strong> Motion will cycle every <span id="previewCycle">1</span>s, ranging from <span id="previewMin">0</span>° to <span id="previewMax">5</span>° around axis <span id="previewAxis">0</span>°
+                        </div>
+                    </div>
+
+                    <!-- Export & Project Controls -->
+                    <div class="control-group">
+                        <button id="exportBtn" onclick="app.handleExport()" style="display: none; margin-bottom: 8px;">Export Video to MP4</button>
+                        <button class="success" id="saveProjectBtn" onclick="app.saveProject()" style="display: none; margin-bottom: 8px;">Save Project</button>
+                        <button class="secondary" id="loadProjectBtn" onclick="app.loadProject()" style="display: none; margin-bottom: 8px;">Load Project</button>
+                        <div id="exportStatus" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Reminders -->
+            <div class="reminder-cards" id="reminderCards"></div>
+
+            <!-- Logout -->
+            <div class="user-info">
+                <p>Logged in as: <strong id="userEmail"></strong></p>
+                <button class="secondary" onclick="app.handleLogout()" style="width: 200px; margin: 20px auto 0;">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            state: {
+                user: null,
+                videoFile: null,
+                videoDuration: 0,
+                trimStart: 0,
+                trimEnd: 0,
+                rotationAngle: 0,
+                axisDegrees: 0,
+                motionRangeMin: 0,
+                motionRangeMax: 5,
+                cycleDuration: 1
+            },
+
+            // Initialize app
+            init() {
+                this.restoreSession();
+                this.renderReminders();
+                this.setupDialCanvas();
+            },
+
+            // Session Management
+            restoreSession() {
+                const stored = localStorage.getItem('vibeshiftUser');
+                if (stored) {
+                    this.state.user = JSON.parse(stored);
+                    this.showAppScreen();
+                }
+            },
+
+            handleLogin() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+
+                if (!email || !password) {
+                    alert('Please enter email and password');
+                    return;
+                }
+
+                // Get all accounts from localStorage
+                const allAccounts = JSON.parse(localStorage.getItem('vibeshiftAccounts') || '[]');
+                const account = allAccounts.find(acc => acc.email === email && acc.password === password);
+
+                if (account) {
+                    this.state.user = { email };
+                    localStorage.setItem('vibeshiftUser', JSON.stringify(this.state.user));
+                    this.showAppScreen();
+                } else {
+                    alert('Invalid credentials');
+                }
+            },
+
+            showCreateAccountForm() {
+                const email = prompt('Enter email:');
+                if (!email) return;
+                const password = prompt('Enter password:');
+                if (!password) return;
+
+                const allAccounts = JSON.parse(localStorage.getItem('vibeshiftAccounts') || '[]');
+                if (allAccounts.find(acc => acc.email === email)) {
+                    alert('Account already exists');
+                    return;
+                }
+
+                allAccounts.push({ email, password });
+                localStorage.setItem('vibeshiftAccounts', JSON.stringify(allAccounts));
+                alert('Account created! Now login.');
+            },
+
+            handleLogout() {
+                localStorage.removeItem('vibeshiftUser');
+                this.state.user = null;
+                this.state.videoFile = null;
+                this.showLoginScreen();
+            },
+
+            // Screen Management
+            showLoginScreen() {
+                document.getElementById('loginScreen').classList.add('active');
+                document.getElementById('appScreen').classList.remove('active');
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+            },
+
+            showAppScreen() {
+                document.getElementById('loginScreen').classList.remove('active');
+                document.getElementById('appScreen').classList.add('active');
+                document.getElementById('userEmail').textContent = this.state.user.email;
+            },
+
+            // Video Upload
+            handleVideoUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const uploadPrompt = document.getElementById('uploadPrompt');
+                const uploadSuccess = document.getElementById('uploadSuccess');
+                const uploadError = document.getElementById('uploadError');
+                const uploadLoading = document.getElementById('uploadLoading');
+
+                uploadPrompt.style.display = 'none';
+                uploadSuccess.style.display = 'none';
+                uploadError.style.display = 'none';
+                uploadLoading.style.display = 'block';
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    setTimeout(() => {
+                        this.state.videoFile = file;
+                        
+                        // Get video duration
+                        const video = document.createElement('video');
+                        video.onloadedmetadata = () => {
+                            this.state.videoDuration = Math.floor(video.duration);
+                            this.state.trimEnd = this.state.videoDuration;
+                            document.getElementById('trimEnd').value = this.state.videoDuration;
+                        };
+                        video.src = URL.createObjectURL(file);
+
+                        uploadLoading.style.display = 'none';
+                        uploadSuccess.style.display = 'block';
+                        uploadSuccess.innerHTML = `
+                            <p><span class="label">File:</span> ${file.name}</p>
+                            <p><span class="label">Duration:</span> ${Math.floor(this.state.videoDuration / 60)}:${(this.state.videoDuration % 60).toString().padStart(2, '0')}</p>
+                            <p><span class="label">Size:</span> ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        `;
+
+                        // Show controls
+                        document.getElementById('trimControls').style.display = 'block';
+                        document.getElementById('rotationControls').style.display = 'block';
+                        document.getElementById('motionControls').style.display = 'block';
+                        document.getElementById('exportBtn').style.display = 'block';
+                        document.getElementById('saveProjectBtn').style.display = 'block';
+                        document.getElementById('loadProjectBtn').style.display = 'block';
+                    }, 500);
+                };
+                reader.readAsArrayBuffer(file);
+            },
+
+            // Trim Controls
+            adjustTrimStart(delta) {
+                const val = Math.max(0, parseInt(document.getElementById('trimStart').value) + delta);
+                document.getElementById('trimStart').value = val;
+                this.state.trimStart = val;
+            },
+
+            updateTrimStart(val) {
+                this.state.trimStart = parseInt(val) || 0;
+            },
+
+            adjustTrimEnd(delta) {
+                const val = Math.min(this.state.videoDuration, parseInt(document.getElementById('trimEnd').value) + delta);
+                document.getElementById('trimEnd').value = val;
+                this.state.trimEnd = val;
+            },
+
+            updateTrimEnd(val) {
+                this.state.trimEnd = Math.min(this.state.videoDuration, parseInt(val) || this.state.videoDuration);
+            },
+
+            // Rotation
+            adjustRotation(delta) {
+                const val = (parseInt(document.getElementById('rotationAngle').value) + delta) % 360;
+                document.getElementById('rotationAngle').value = val;
+                this.state.rotationAngle = val;
+            },
+
+            updateRotation(val) {
+                this.state.rotationAngle = parseInt(val) || 0;
+            },
+
+            // Motion Artifact Dial
+            setupDialCanvas() {
+                setTimeout(() => {
+                    const canvas = document.getElementById('axisDial');
+                    if (!canvas) return;
+
+                    canvas.addEventListener('click', (e) => this.dialClick(e));
+                    canvas.addEventListener('mousemove', (e) => this.dialMouseMove(e));
+                    this.drawDial();
+                }, 100);
+            },
+
+            drawDial() {
+                const canvas = document.getElementById('axisDial');
+                if (!canvas) return;
+
+                const ctx = canvas.getContext('2d');
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = 90;
+
+                // Clear
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Circle
+                ctx.strokeStyle = '#008FC4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Degree markers
+                ctx.fillStyle = '#008FC4';
+                ctx.font = '10px Space Grotesk';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                for (let deg = 0; deg < 360; deg += 45) {
+                    const rad = (deg - 90) * Math.PI / 180;
+                    const x = centerX + Math.cos(rad) * (radius + 20);
+                    const y = centerY + Math.sin(rad) * (radius + 20);
+                    ctx.fillText(deg, x, y);
+                }
+
+                // Axis line
+                const axisDeg = parseInt(document.getElementById('axisDegrees').value) || 0;
+                const axisRad = (axisDeg - 90) * Math.PI / 180;
+                ctx.strokeStyle = '#00C48F';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + Math.cos(axisRad) * radius,
+                    centerY + Math.sin(axisRad) * radius
+                );
+                ctx.stroke();
+
+                // Center dot
+                ctx.fillStyle = '#008FC4';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 6, 0, Math.PI * 2);
+                ctx.fill();
+            },
+
+            dialClick(e) {
+                const canvas = e.target;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                this.updateDialFromCoords(x, y);
+            },
+
+            dialMouseMove(e) {
+                if (e.buttons === 1) {
+                    const canvas = e.target;
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    this.updateDialFromCoords(x, y);
+                }
+            },
+
+            updateDialFromCoords(x, y) {
+                const canvas = document.getElementById('axisDial');
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                let deg = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI + 90;
+                deg = (deg + 360) % 360;
+                document.getElementById('axisDegrees').value = Math.round(deg);
+                this.updateAxisDegrees(Math.round(deg));
+            },
+
+            adjustAxisDegrees(delta) {
+                const val = (parseInt(document.getElementById('axisDegrees').value) + delta + 360) % 360;
+                document.getElementById('axisDegrees').value = val;
+                this.updateAxisDegrees(val);
+            },
+
+            updateAxisDegrees(val) {
+                this.state.axisDegrees = parseInt(val) || 0;
+                this.drawDial();
+            },
+
+            adjustMotionMin(delta) {
+                const val = Math.max(0, parseInt(document.getElementById('motionRangeMin').value) + delta);
+                document.getElementById('motionRangeMin').value = val;
+                this.updateMotionMin(val);
+            },
+
+            updateMotionMin(val) {
+                this.state.motionRangeMin = parseInt(val) || 0;
+                this.updatePreview();
+            },
+
+            adjustMotionMax(delta) {
+                const val = Math.max(0, parseInt(document.getElementById('motionRangeMax').value) + delta);
+                document.getElementById('motionRangeMax').value = val;
+                this.updateMotionMax(val);
+            },
+
+            updateMotionMax(val) {
+                this.state.motionRangeMax = parseInt(val) || 0;
+                this.updatePreview();
+            },
+
+            adjustCycleDuration(delta) {
+                const val = Math.max(0.5, parseFloat(document.getElementById('cycleDuration').value) + delta);
+                document.getElementById('cycleDuration').value = val.toFixed(1);
+                this.updateCycleDuration(val);
+            },
+
+            updateCycleDuration(val) {
+                this.state.cycleDuration = parseFloat(val) || 1;
+                this.updatePreview();
+            },
+
+            updatePreview() {
+                document.getElementById('previewCycle').textContent = this.state.cycleDuration;
+                document.getElementById('previewMin').textContent = this.state.motionRangeMin;
+                document.getElementById('previewMax').textContent = this.state.motionRangeMax;
+                document.getElementById('previewAxis').textContent = this.state.axisDegrees;
+            },
+
+            // Export Video
+            async handleExport() {
+                if (!this.state.videoFile) {
+                    alert('No video selected');
+                    return;
+                }
+
+                const exportBtn = document.getElementById('exportBtn');
+                const exportStatus = document.getElementById('exportStatus');
+
+                exportBtn.disabled = true;
+                exportStatus.style.display = 'block';
+                exportStatus.innerHTML = '<div class="spinner" style="display: inline-block; margin-right: 8px;"></div> Processing video (this may take a minute)...';
+
+                try {
+                    // Read video file as base64
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const base64 = e.target.result.split(',')[1];
+
+                        // Send to backend
+                        const response = await fetch('/api/process-video', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                videoBase64: base64,
+                                settings: {
+                                    trimStart: this.state.trimStart,
+                                    trimEnd: this.state.trimEnd,
+                                    rotationAngle: this.state.rotationAngle,
+                                    axisDegrees: this.state.axisDegrees,
+                                    motionRangeMin: this.state.motionRangeMin,
+                                    motionRangeMax: this.state.motionRangeMax,
+                                    cycleDuration: this.state.cycleDuration
+                                }
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.details || error.error || 'Export failed');
+                        }
+
+                        const result = await response.json();
+                        if (result.success && result.videoBase64) {
+                            // Download video
+                            const link = document.createElement('a');
+                            link.href = 'data:video/mp4;base64,' + result.videoBase64;
+                            link.download = result.filename || 'VibeShift_Video.mp4';
+                            link.click();
+
+                            exportStatus.innerHTML = '✅ Video exported successfully!';
+                            setTimeout(() => {
+                                exportStatus.style.display = 'none';
+                                exportBtn.disabled = false;
+                            }, 3000);
+                        }
+                    };
+                    reader.readAsDataURL(this.state.videoFile);
+                } catch (err) {
+                    exportStatus.innerHTML = `❌ Export failed: ${err.message}`;
+                    exportBtn.disabled = false;
+                }
+            },
+
+            // Project Save/Load
+            saveProject() {
+                if (!this.state.videoFile) {
+                    alert('No video loaded');
+                    return;
+                }
+
+                const project = {
+                    timestamp: new Date().toISOString(),
+                    axisDegrees: this.state.axisDegrees,
+                    motionRangeMin: this.state.motionRangeMin,
+                    motionRangeMax: this.state.motionRangeMax,
+                    cycleDuration: this.state.cycleDuration,
+                    rotationAngle: this.state.rotationAngle,
+                    trimStart: this.state.trimStart,
+                    trimEnd: this.state.trimEnd
+                };
+
+                const dateStr = new Date().toISOString().split('T')[0];
+                const filename = `VibeShift_Project_${dateStr}.json`;
+                const link = document.createElement('a');
+                link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(project, null, 2));
+                link.download = filename;
+                link.click();
+            },
+
+            loadProject() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const project = JSON.parse(event.target.result);
+                            this.state.axisDegrees = project.axisDegrees || 0;
+                            this.state.motionRangeMin = project.motionRangeMin || 0;
+                            this.state.motionRangeMax = project.motionRangeMax || 5;
+                            this.state.cycleDuration = project.cycleDuration || 1;
+                            this.state.rotationAngle = project.rotationAngle || 0;
+                            this.state.trimStart = project.trimStart || 0;
+                            this.state.trimEnd = project.trimEnd || 0;
+
+                            document.getElementById('axisDegrees').value = this.state.axisDegrees;
+                            document.getElementById('motionRangeMin').value = this.state.motionRangeMin;
+                            document.getElementById('motionRangeMax').value = this.state.motionRangeMax;
+                            document.getElementById('cycleDuration').value = this.state.cycleDuration;
+                            document.getElementById('rotationAngle').value = this.state.rotationAngle;
+                            document.getElementById('trimStart').value = this.state.trimStart;
+                            document.getElementById('trimEnd').value = this.state.trimEnd;
+
+                            this.drawDial();
+                            this.updatePreview();
+                            alert('Project loaded!');
+                        } catch (err) {
+                            alert('Invalid project file');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            },
+
+            // Feature Reminders
+            renderReminders() {
+                const reminders = [
+                    '🎬 Motion Artifact Effects Pipeline — add frame-by-frame transforms during encoding',
+                    '🎵 Audio-Driven Motion — sync motion artifacts with audio pitch (VibeScape integration)',
+                    '📈 Motion Ramp Control — ramp motion artifact range from zero to max over time',
+                    '⚡ Load Cell Integration — real-time load cell input drives motion artifact rotation',
+                    '🥽 VR & Haptic Feedback — Meta Quest 3 support + haptic feedback'
+                ];
+
+                const container = document.getElementById('reminderCards');
+                container.innerHTML = reminders.map((text, idx) => `
+                    <div class="reminder-card">
+                        <div class="reminder-text">${text}</div>
+                        <button class="reminder-close" onclick="document.querySelectorAll('.reminder-card')[${idx}].remove()">×</button>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // Initialize
+        app.init();
+    </script>
+</body>
+</html>
